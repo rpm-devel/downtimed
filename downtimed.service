@@ -1,0 +1,13 @@
+[Unit]
+Description=Downtime record keeper
+Documentation=man:downtimed(8)
+
+[Service]
+EnvironmentFile=-/etc/sysconfig/downtimed
+ExecStart=/usr/sbin/downtimed -F $DOWNTIMED_OPTS
+ExecReload=/bin/kill -HUP $MAINPID
+Type=simple
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
