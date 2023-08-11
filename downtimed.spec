@@ -72,6 +72,6 @@ systemctl enable %{name}.service
 %dir %_sharedstatedir/downtimed
 
 %changelog
-* Wed Feb 14 2018 Casjays Developments <admin@build.casjaysdev.com> - 0.4
+* Wed Feb 14 2018 Casjays Developments <admin@build.casjaysdev.pro> - 0.4
 - Rebuild for CentOS 7
 
