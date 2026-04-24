@@ -1,21 +1,23 @@
 Name:           downtimed
 Version:        1.0
-Release:        0.2%{?dist}
+Release:        1%{?dist}
 Summary:        Downtime Monitoring Daemon
-# http://dist.epipe.com/downtimed/downtimed-%{version}.tar.gz
-Source:         downtimed-%{version}.tar.gz
+Source0:        https://github.com/snabb/downtimed/archive/version-%{version}/%{name}-%{version}.tar.gz
 Source1:        downtimed.service
-URL:            http://dist.epipe.com/downtimed/
-Group:          System/Monitoring
-License:        BSD3c
-BuildRoot:      %{_tmppath}/build-%{name}-%{version}
-BuildRequires:  gcc make glibc-devel
-BuildRequires:  autoconf automake libtool systemd
-BuildRequires:  systemd-units
-BuildRequires:  autoconf, automake, libtool
-Requires(post): systemd-units
-Requires(preun): systemd-units
-Requires(postun): systemd-units
+URL:            https://github.com/snabb/downtimed
+License:        BSD-3-Clause
+BuildRequires:  gcc
+BuildRequires:  make
+BuildRequires:  glibc-devel
+BuildRequires:  autoconf
+BuildRequires:  automake
+BuildRequires:  libtool
+%if 0%{?rhel} == 7
+BuildRequires:  systemd
+%else
+BuildRequires:  systemd-rpm-macros
+%endif
+%{?systemd_requires}
 
 %description
 downtimed is a program that monitors operating system downtime, uptime,
@@ -27,51 +29,46 @@ running. During a graceful system shutdown, it records a time stamp in another
 file.
 
 %prep
-%setup -q
+%setup -q -n %{name}-version-%{version}
 
 %build
 %configure
-%__make %{?jobs:-j%{jobs}}
+%make_build
 
 %install
-%__rm -rf "$RPM_BUILD_ROOT"
-make DESTDIR=$RPM_BUILD_ROOT install
+%make_install
 
-mkdir -p $RPM_BUILD_ROOT/%{_unitdir}
-%__install -d "$RPM_BUILD_ROOT%_sharedstatedir/downtimed"
-cp -Rfv "%{SOURCE1}" "$RPM_BUILD_ROOT/%{_unitdir}/downtimed.service"
-touch "$RPM_BUILD_ROOT%_sharedstatedir/downtimed/downtimedb"
-%__install -d "$RPM_BUILD_ROOT%{_sbindir}"
-
-
-%clean
-%__rm -rf "$RPM_BUILD_ROOT"
+mkdir -p %{buildroot}/%{_unitdir}
+install -m 644 %{SOURCE1} %{buildroot}/%{_unitdir}/downtimed.service
+install -d %{buildroot}%{_sharedstatedir}/downtimed
+touch %{buildroot}%{_sharedstatedir}/downtimed/downtimedb
 
 %post
-/sbin/ldconfig
 %systemd_post %{name}.service
-systemctl enable %{name}.service
 
 %postun
-/sbin/ldconfig
 %systemd_postun_with_restart %{name}.service
 
 %preun
-/sbin/ldconfig
 %systemd_preun %{name}.service
 
 %files
-%defattr(-,root,root)
-#%doc LICENSE NEWS README
-%_bindir/downtime*
-%_sbindir/downtime*
+%license LICENSE
+%doc NEWS README
+%{_bindir}/downtime*
+%{_sbindir}/downtime*
 %{_unitdir}/downtimed.service
-%_mandir/man1/downtime*.1.gz
-%_mandir/man8/downtime*.8.gz
-%_sharedstatedir/downtimed/downtimedb
-%dir %_sharedstatedir/downtimed
+%{_mandir}/man1/downtime*.1*
+%{_mandir}/man8/downtime*.8*
+%ghost %{_sharedstatedir}/downtimed/downtimedb
+%dir %{_sharedstatedir}/downtimed
 
 %changelog
+* Fri Apr 24 2026 CasjaysDev <rpm-devel@casjaysdev.pro> - 1.0-1
+- Modernize spec for EL10
+- Remove deprecated BuildRoot, Group, %clean, %defattr
+- Use systemd-rpm-macros
+- Use downloadable GitHub Source0 URL
+
 * Wed Feb 14 2018 Casjays Developments <admin@build.casjaysdev.pro> - 0.4
 - Rebuild for CentOS 7
-
