@@ -5,6 +5,7 @@ Summary:        Downtime Monitoring Daemon
 Source0:        https://github.com/snabb/downtimed/archive/version-%{version}/%{name}-%{version}.tar.gz
 Source1:        downtimed.service
 URL:            https://github.com/snabb/downtimed
+ExclusiveArch:  x86_64 aarch64
 License:        BSD-3-Clause
 BuildRequires:  gcc
 BuildRequires:  make
@@ -12,11 +13,7 @@ BuildRequires:  glibc-devel
 BuildRequires:  autoconf
 BuildRequires:  automake
 BuildRequires:  libtool
-%if 0%{?rhel} == 7
-BuildRequires:  systemd
-%else
 BuildRequires:  systemd-rpm-macros
-%endif
 %{?systemd_requires}
 
 %description
@@ -64,6 +61,11 @@ touch %{buildroot}%{_sharedstatedir}/downtimed/downtimedb
 %dir %{_sharedstatedir}/downtimed
 
 %changelog
+* Sat Jul 04 2026 CasjaysDev <rpm-devel@casjaysdev.pro> - 1.0-1
+- Source0: GitHub archive URL verified (version-1.0 is latest, 302→200)
+- Drop RHEL7 systemd conditional; always BuildRequires: systemd-rpm-macros
+- Add ExclusiveArch: x86_64 aarch64
+
 * Fri Apr 24 2026 CasjaysDev <rpm-devel@casjaysdev.pro> - 1.0-1
 - Modernize spec for EL10
 - Remove deprecated BuildRoot, Group, %clean, %defattr
