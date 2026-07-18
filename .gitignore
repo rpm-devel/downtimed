@@ -156,12 +156,7 @@ dist/
 out/
 
 # Downloaded upstream sources (fetched by spectool/rpmbuild.sh, never committed)
-*.tar.gz
-*.tar.bz2
-*.tar.xz
-*.tar.zst
-*.tgz
-*.zip
+downtimed-*.tar.gz
 
 # Rust
 target/
