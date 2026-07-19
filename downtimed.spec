@@ -29,6 +29,7 @@ file.
 %setup -q -n %{name}-version-%{version}
 
 %build
+autoreconf -fi
 %configure
 %make_build
 
@@ -51,7 +52,7 @@ touch %{buildroot}%{_sharedstatedir}/downtimed/downtimedb
 
 %files
 %license LICENSE
-%doc NEWS README
+%doc NEWS README.md
 %{_bindir}/downtime*
 %{_sbindir}/downtime*
 %{_unitdir}/downtimed.service
